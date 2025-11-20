@@ -11,42 +11,56 @@ import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
 const queryClient = new QueryClient(
   {
     defaultOptions: {
-      queries:{
-        staleTime:1000*60, // 1minutes
+      queries: {
+        // staleTime:1000*60, // 1minutes , its stale time , means when it will invalidate the cache and fetch again, but we should put it default
+        staleTime: 0, // 0 means data is fresh only for current session , after that it will fetch again
       },
     },
   }
 );
 
 
-function App () {
+function App() {
   return (
     // 2 lets provide query data to our component tree
     <QueryClientProvider client={queryClient}>
-      //3 it is first child of QueryClientProvider
-      <ReactQueryDevtools initialIsOpen={false}/>
-    <GlobalStyles/>
-    <BrowserRouter>
-    <Routes>
-      {/* //!1 we created Applayout and all route components inside App.jsx will be children of it and will be rendered inside outlet */}
-   <Route element ={<AppLayout/>}>
-      <Route index element={<Navigate replace to ="dashboard"/>}/>
-      <Route  path ='dashboard' element={<Dashboard/>}/>
-      <Route  path ='account' element={<Account/>}/>
-      <Route  path ='bookings' element={<Bookings/>}/>
-      <Route  path ='cabins' element={<Cabins/>}/>
-      <Route  path ='settings' element={<Settings/>}/>
-      <Route  path ='users' element={<Users/>}/>
-      </Route>
-       <Route  path ='login' element={<Login/>}/>
-      <Route  path ='*' element={<PageNotFound/>}/>
-    </Routes>
-    </BrowserRouter>
+      {/* //3 it is first child of QueryClientProvider */}
+      <ReactQueryDevtools initialIsOpen={false} />
+      <GlobalStyles />
+      <BrowserRouter>
+        <Routes>
+          {/* //!1 we created Applayout and all route components inside App.jsx will be children of it and will be rendered inside outlet */}
+          <Route element={<AppLayout />}>
+            <Route index element={<Navigate replace to="dashboard" />} />
+            <Route path='dashboard' element={<Dashboard />} />
+            <Route path='account' element={<Account />} />
+            <Route path='bookings' element={<Bookings />} />
+            <Route path='cabins' element={<Cabins />} />
+            <Route path='settings' element={<Settings />} />
+            <Route path='users' element={<Users />} />
+          </Route>
+          <Route path='login' element={<Login />} />
+          <Route path='*' element={<PageNotFound />} />
+        </Routes>
+      </BrowserRouter>
+      <Toaster position="top-center" gutter={12}
+        containerStyle={{ margin: "8px" }}
+        toastOptions={{
+          success: {
+            duration: 3000,
+          },
+          error: {
+            duration: 2000,
+          },
+          style: { fontSize: "16px", maxWidth: "500px", padding: "16px 24px", backgroundColor: "var(--color-grey-0)", color: "var(--color-grey-700)" },
+        }}
+      />
     </QueryClientProvider>
-   
+
   )
 }
 

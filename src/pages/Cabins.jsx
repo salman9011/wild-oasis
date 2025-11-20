@@ -1,19 +1,31 @@
-import { useEffect } from "react";
 import Heading from "../ui/Heading";
 import Row from "../ui/Row";
-import { getCabin } from "../services/apiCabin";
+import CabinTable from "../features/cabins/CabinTable";
+import Button from "../ui/Button";
+import { useState } from "react";
+import CreateCabinForm from "../features/cabins/CreateCabinForm";
 
 function Cabins() {
-
-  useEffect(function(){
-getCabin().then((data)=>console.log(data));
-//  ohhh we get our data , so we craeted backend service to fetch cabins and we are able to use it here in our component to get the data from supabase
-  },[])
+  const [showForm, setShowForm] = useState(false);
   return (
+    <>
     <Row type="horizontal">
       <Heading as="h1">All cabins</Heading>
-      <p>TEST</p>
+      <p>Filter/sort</p>
+      
     </Row>
+    <Row>
+      <CabinTable/>
+      
+     
+    </Row>
+     <Button onClick={()=>setShowForm(showForm=>!showForm)} >add cabin</Button>
+       {showForm && <CreateCabinForm/>}
+    <Row>
+      
+
+    </Row>
+    </>
   );
 }
 
