@@ -49,19 +49,13 @@ const variations = {
 };
 
 const Button = styled.button`
-  
-  border:none;
+  border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
 
-  /* adding dynamic styles based on props we removed self added css properties , so we take properties from above objects based on props */
-  ${(props)=>sizes[props.size]}
-  ${(props)=>variations[props.variation]}
+  /* Use default values inline with fallback using || operator */
+  ${props => sizes[props.size || 'medium']}
+  ${props => variations[props.variation || 'primary']}
 `
-
-Button.defaultProps = {
-  size: 'medium',
-  variation: 'primary',
-};
 
 export default Button;

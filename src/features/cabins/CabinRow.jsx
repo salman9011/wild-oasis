@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import { formatCurrency } from "../../utils/helpers";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCabin } from "../../services/apiCabin";
+import toast from "react-hot-toast";
 
 const TableRow = styled.div`
   display: grid;
@@ -38,3 +42,43 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+
+function CabinRow({ cabin }) {
+  const { id: cabinId, name, maxCapacity, regularPrice, discount, image } = cabin;
+  const queryClient = useQueryClient();
+  //now on delete lets invalidate the cache , which means we have to mutate the data for that we have useMutation hook of react query
+  const { isLoading: isDeleting, mutate } = useMutation({
+    //which data we have to mutate
+    // mutationFn: (cabinId) => deleteCabin(cabinId)
+    // both values are same here so we can just write like this because the id we passed and the function argument is also cabinId
+    mutationFn: deleteCabin
+    ,
+    onSuccess: () => {
+
+      toast.success("Cabin deleted successfully");
+      // on success we have to invalidate query that function is in query client so jus import first query client hook
+      queryClient.invalidateQueries(
+        {
+          queryKey: ['cabins']
+        }
+      )
+    },
+    // its the error thrown from deleteCabin function
+    onError:(err) => toast.error(err.message),
+  
+
+  });
+
+  return (
+    <TableRow role="row">
+      <Img src={image} />
+      <Cabin>{name}</Cabin>
+      <div>Fits up to {maxCapacity}</div>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      <Discount>{formatCurrency(discount)}</Discount>
+      <button onClick={() => mutate(cabinId)} disabled={isDeleting}>delete</button>
+
+    </TableRow>
+  )
+}
+export default CabinRow;
