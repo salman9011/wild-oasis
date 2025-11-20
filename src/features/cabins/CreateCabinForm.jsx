@@ -15,10 +15,10 @@ import FormRow from "../../ui/FormRow";
 
 // we don't have any state variable about the form , no controlled elemmnts , because we are using react form hook library
 function CreateCabinForm() {
-  const { register, handleSubmit, reset,getValues, formState } = useForm();
+  const { register, handleSubmit, reset, getValues, formState } = useForm();
   // to get erros shown below with feilds  we use formState and extract erros from it
-  const {errors} = formState;
-  console.log("form errors object",errors);  
+  const { errors } = formState;
+  console.log("form errors object", errors);
   // register function will return an object containing onChange , onBlur , name , ref etc
 
   // so all form inputs have to register in this register functions se how to use register
@@ -40,7 +40,9 @@ function CreateCabinForm() {
   });
 
   function onSubmitForm(data) {
-    mutate(data);
+    console.log("form data", data);
+    mutate({...data,image:data.image?.[0]}); // because file input returns array of files
+
   }
 
   function onError(errors) {
@@ -51,57 +53,62 @@ function CreateCabinForm() {
     // if one of validation fails the handle submit will call onError
     <Form onSubmit={handleSubmit(onSubmitForm, onError)}>
       <FormRow label='Cabin name' error={errors?.name?.message}>
-      
+
         <Input type="text" id="name" {...register("name", {
           required: "This feild is required",
-          disabled:{isCreating}
+          disabled: { isCreating }
         })} />
-        
+
       </FormRow>
 
 
-       <FormRow label='Max Capacity' error={errors?.maxCapacity?.message}>
-      
-        <Input type="number" id="maxCapacity"  disabled={isCreating}
+      <FormRow label='Max Capacity' error={errors?.maxCapacity?.message}>
 
-        {...register("maxCapacity", {
-          required: "This feild is required"
-        
-        })} />
+        <Input type="number" id="maxCapacity" disabled={isCreating}
+
+          {...register("maxCapacity", {
+            required: "This feild is required"
+
+          })} />
       </FormRow>
 
-     <FormRow label='Regular Price' error={errors?.regularPrice?.message}>
-      
+      <FormRow label='Regular Price' error={errors?.regularPrice?.message}>
+
         <Input type="number" id="regularPrice" disabled={isCreating} {...register("regularPrice", {
           required: "This feild is required",
-         
+
         })} />
       </FormRow>
 
-      <FormRow label ='Discount' error={errors?.discount?.message}>
-        <Input type="number" id="discount" disabled={isCreating}  defaultValue={0}
-         
-        
-        {...register("discount", {
-          required: "This feild is required",
-          validate:(value) => value <= getValues().regularPrice || 'Discount cannot be more than regular price',
-         
-        })} />
+      <FormRow label='Discount' error={errors?.discount?.message}>
+        <Input type="number" id="discount" disabled={isCreating} defaultValue={0}
+
+
+          {...register("discount", {
+            required: "This feild is required",
+            validate: (value) => value <= getValues().regularPrice || 'Discount cannot be more than regular price',
+
+          })} />
       </FormRow>
 
       <FormRow label='Description' error={errors?.description?.message}>
-       
-        <Textarea type="number" id="description"  disabled={isCreating} defaultValue=""  {...register("description",
+
+        <Textarea type="number" id="description" disabled={isCreating} defaultValue=""  {...register("description",
           {
             required: "This feild is required",
-      
+
           }
         )} />
       </FormRow>
 
       <FormRow label='Image' error={errors?.image?.message}>
-       
-        <FileInput id="image" accept="image/*" />
+
+        <FileInput id="image" accept="image/*"  {...register("image",
+          {
+            required: "This feild is required",
+
+          }
+        )}/>
       </FormRow>
 
       <FormRow>
