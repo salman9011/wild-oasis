@@ -3,6 +3,8 @@ import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabin";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -45,6 +47,7 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const { id: cabinId, name, maxCapacity, regularPrice, discount, image } = cabin;
+  const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
   //now on delete lets invalidate the cache , which means we have to mutate the data for that we have useMutation hook of react query
   const { isLoading: isDeleting, mutate } = useMutation({
@@ -70,15 +73,21 @@ function CabinRow({ cabin }) {
   });
 
   return (
+    <>
     <TableRow role="row">
       <Img src={image} />
       <Cabin>{name}</Cabin>
       <div>Fits up to {maxCapacity}</div>
       <Price>{formatCurrency(regularPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
+      <div>
+      <button onClick={() => setShowForm(!showForm)} >edit</button>
       <button onClick={() => mutate(cabinId)} disabled={isDeleting}>delete</button>
+      </div>
 
     </TableRow>
+    {showForm && <CreateCabinForm cabinToedit={cabin}/>}
+    </>
   )
 }
 export default CabinRow;
