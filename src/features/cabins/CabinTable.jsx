@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+
 import styled from "styled-components";
-import {getCabins } from "../../services/apiCabin";
+
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
+import { useCabins } from "./useCabins";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -29,16 +30,16 @@ const TableHeader = styled.header`
 `;
 
 function CabinTable() {
+
   // now lets use react query to fetch cabins data
   // query key should be unique for each data set and it should be array , can be complex array,in dev tools we can see this name
   // later if we read data in another page with this exact key then same data will be used from cache instead of fetching again
   // second argument is function which returns a promise, but we have already function for getCabins which returns a promise
- const {data:cabins, isLoading} = useQuery({
-    queryKey:['cabins'],
-    queryFn: getCabins,
-  });
+
   // role gives semantic meaning to element for accessibility and tells that it is html , even if we have not used in those in stylings
-  if(isLoading) return <Spinner/>
+
+  const { isLoading, cabins } = useCabins();
+  if (isLoading) return <Spinner />
   return (<div>
     <Table role='table'>
       <TableHeader role='row'>
@@ -47,9 +48,9 @@ function CabinTable() {
         <div>Capacity</div>
         <div>Price</div>
         <div>Discount</div>
-        
+
       </TableHeader>
-      {cabins.map((cabin) => <CabinRow key ={cabin.id} cabin ={cabin}/> )}
+      {cabins.map((cabin) => <CabinRow key={cabin.id} cabin={cabin} />)}
     </Table>
   </div>)
 }
