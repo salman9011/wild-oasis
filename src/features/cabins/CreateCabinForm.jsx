@@ -6,15 +6,19 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateEditCabin } from "../../services/apiCabin";
-import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
+import { useCreateCabin } from "./useCreateCabin";
+import { useEditCabin } from "./useEditCabin";
 
 
 
 // we don't have any state variable about the form , no controlled elemmnts , because we are using react form hook library
 function CreateCabinForm({cabinToedit={}}) {
+
+  const {isCreating,createCabin} = useCreateCabin()
+  const {isEditing, editCabin} = useEditCabin();
+
+  
   
   const {id:editId,...editCabinData} = cabinToedit;
   const isEditSession = Boolean(editId);
@@ -25,43 +29,17 @@ function CreateCabinForm({cabinToedit={}}) {
   const { errors } = formState;
   // register function will return an object containing onChange , onBlur , name , ref etc
 
-  // so all form inputs have to register in this register functions se how to use register
-  // check componnets tree what is in regiester , by register these inputs will got new props
-
-  //lets mutate for add
-  const queryClient = useQueryClient();
-  const { mutate:createCabin, isLoading: isCreating } = useMutation({
-    // mutationFn: CreateEditCabin,
-    mutationFn: (newCabinData) => CreateEditCabin(newCabinData),
-    onSuccess: () => {
-      toast.success("Cabin added successfully");
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-
-  });
-
-    const { mutate: editCabin, isLoading: isEditing } = useMutation({
-    mutationFn: ({newCabinData,id})=>CreateEditCabin(newCabinData,id),
-    onSuccess: () => {
-      toast.success("Cabin updated successfully");
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-
-  });
+  
+   
 
   const isWorking = isCreating || isEditing;
   function onSubmitForm(data) {
     const image = typeof data.image === 'string' ? data.image : data.image[0];
   if(isEditSession) editCabin({newCabinData:{...data,image},id:editId});
-   else  createCabin({...data,image:image}); // because file input returns array of files
+
+  // here mutation happen , so we can use onsuceess here also to reset the form , as we can't use reset in create Hook, that is also advantage of react query
+  // this mutation has also acces of newly created object
+   else  createCabin({...data,image:image}, {onSuccess:()=>reset()}); // because file input returns array of files
 
   }
 
