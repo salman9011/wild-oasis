@@ -15,18 +15,16 @@ import { useEditCabin } from "./useEditCabin";
 // we don't have any state variable about the form , no controlled elemmnts , because we are using react form hook library
 function CreateCabinForm({cabinToedit={}}) {
 
-  const {isCreating,createCabin} = useCreateCabin()
-  const {isEditing, editCabin} = useEditCabin();
-
-  
-  
   const {id:editId,...editCabinData} = cabinToedit;
   const isEditSession = Boolean(editId);
   const { register, handleSubmit, reset, getValues, formState } = useForm({
-    defaultValues:isEditSession ? editCabinData :{} 
+    defaultValues: isEditSession ? editCabinData : {}
   });
-  // to get erros shown below with feilds  we use formState and extract erros from it
   const { errors } = formState;
+
+  const {isCreating,createCabin} = useCreateCabin();
+  const {isEditing, editCabin} = useEditCabin();
+  // to get erros shown below with feilds  we use formState and extract erros from it
   // register function will return an object containing onChange , onBlur , name , ref etc
 
   
